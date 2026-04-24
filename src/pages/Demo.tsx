@@ -16,6 +16,32 @@ import { Seo } from "@/components/Seo";
 import { Button } from "@/components/ui/button";
 
 const Demo = () => {
+  // Fix: Load Calendly script manually (since we are not in Next.js)
+  useEffect(() => {
+    const script = document.createElement("script");
+    script.src = "https://assets.calendly.com/assets/external/widget.js";
+    script.async = true;
+    
+    script.onload = () => {
+      // Force initialization once script is loaded
+      const Calendly = (window as any).Calendly;
+      if (Calendly) {
+        Calendly.initInlineWidget({
+          url: 'https://calendly.com/aagyarapuvaishnavi/new-meeting?hide_gdpr_banner=1',
+          parentElement: document.getElementById('calendly-widget-container'),
+        });
+      }
+    };
+
+    document.body.appendChild(script);
+    
+    return () => {
+      if (document.body.contains(script)) {
+        document.body.removeChild(script);
+      }
+    };
+  }, []);
+
   const scrollToCalendly = () => {
     const element = document.getElementById('calendly-section');
     if (element) {
@@ -64,58 +90,40 @@ const Demo = () => {
                 <p className="text-xl md:text-2xl text-slate-500 max-w-2xl mx-auto leading-relaxed">
                     Select a time for your institutional walkthrough.
                 </p>
+                <div className="pt-6">
+                    <Button 
+                        size="lg" 
+                        onClick={scrollToCalendly}
+                        className="bg-teal-600 text-white rounded-full px-10 py-7 text-lg font-bold hover:shadow-xl hover:shadow-teal-600/30 transition-all active:scale-95 group"
+                    >
+                        Secure My Slot <ChevronRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                    </Button>
+                </div>
             </div>
         </section>
 
-        {/* --- SECTION 2: FIXED PREMIUM UI --- */}
+        {/* --- SECTION 2: CALENDLY EMBED --- */}
         <section id="calendly-section" className="py-20 bg-slate-50 border-y border-slate-100">
             <div className="container mx-auto px-6 max-w-5xl">
-                <div className="bg-white rounded-[2.5rem] shadow-2xl border border-slate-200 overflow-hidden flex flex-col md:flex-row">
-                    {/* Left Side: Info */}
-                    <div className="md:w-1/3 p-10 border-r border-slate-100 bg-slate-50/50">
-                        <div className="w-12 h-12 bg-teal-600 rounded-xl mb-6 flex items-center justify-center text-white font-bold text-xl">K</div>
-                        <h2 className="text-2xl font-bold mb-2">KALNET Demo</h2>
-                        <p className="text-slate-500 text-sm mb-8">30 mins · Video Call</p>
-                        <div className="space-y-6 text-sm text-slate-600">
-                            <div className="flex items-center gap-3">
-                                <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center"><Globe className="w-4 h-4 text-slate-400" /></div>
-                                <span>IST (India Time)</span>
-                            </div>
-                            <div className="flex items-start gap-3 text-slate-600">
-                                <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center shrink-0"><CheckCircle2 className="w-4 h-4 text-teal-500" /></div>
-                                <span className="leading-relaxed">A live walkthrough of the digital backbone for your institution.</span>
-                            </div>
+                <div className="bg-white rounded-[2.5rem] shadow-2xl shadow-slate-200 border border-slate-200 overflow-hidden">
+                    {/* Terminal-style Header */}
+                    <div className="px-8 py-5 border-b border-slate-100 bg-slate-50/80 flex items-center justify-between">
+                        <div className="flex gap-2">
+                            <div className="w-3 h-3 rounded-full bg-slate-300" />
+                            <div className="w-3 h-3 rounded-full bg-slate-300" />
+                            <div className="w-3 h-3 rounded-full bg-slate-300" />
                         </div>
+                        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                          <CheckCircle2 className="w-3 h-3" /> Encrypted Session
+                        </span>
                     </div>
-
-                    {/* Right Side: Mock Calendar (Pure UI) */}
-                    <div className="flex-1 p-10 flex flex-col items-center justify-center space-y-10">
-                        <div className="space-y-6 text-center">
-                            <h3 className="text-xl font-bold">Select Date & Time</h3>
-                            <div className="grid grid-cols-7 gap-2 p-4 bg-white rounded-2xl border border-slate-100 shadow-sm">
-                                {['M','T','W','T','F','S','S'].map(d => (
-                                    <div key={d} className="w-8 h-8 text-[10px] font-bold text-slate-400 flex items-center justify-center">{d}</div>
-                                ))}
-                                {/* Mock Days */}
-                                {[...Array(31)].map((_, i) => (
-                                    <div key={i} className={`w-8 h-8 md:w-10 md:h-10 flex items-center justify-center rounded-lg text-sm font-medium transition-all ${i === 14 ? 'bg-teal-600 text-white shadow-lg' : 'hover:bg-teal-50 text-slate-400'}`}>
-                                        {i + 1}
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-
-                        <Button 
-                            size="lg"
-                            className="bg-teal-600 text-white px-12 py-8 text-xl font-bold rounded-2xl shadow-xl shadow-teal-600/30 w-full hover:opacity-90 active:scale-95 transition-all"
-                            onClick={() => window.open('https://calendly.com/acmesales', '_blank')}
-                        >
-                            Confirm & Book Now <ArrowRight className="ml-2 w-6 h-6" />
-                        </Button>
-                        <p className="text-xs font-bold text-slate-400 uppercase tracking-widest flex items-center gap-2">
-                            <CheckCircle2 className="w-3 h-3 text-teal-500" /> Verified Secure Booking 
-                        </p>
-                    </div>
+                    
+                    {/* The Widget */}
+                    <div 
+                        id="calendly-widget-container"
+                        className="w-full" 
+                        style={{ minWidth: '320px', height: '700px' }}
+                    />
                 </div>
             </div>
         </section>
@@ -145,42 +153,38 @@ const Demo = () => {
             </div>
         </section>
 
-        {/* --- Footer --- */}
-        <footer className="py-20 bg-slate-950 text-white text-left">
-            <div className="container mx-auto px-6 max-w-7xl grid gap-16 md:grid-cols-4">
-                <div className="col-span-2 space-y-6">
-                    <div className="flex items-center gap-2">
-                        <div className="w-8 h-8 bg-teal-600 rounded-lg flex items-center justify-center text-white font-bold text-sm">K</div>
-                        <span className="text-xl font-bold tracking-tight">KALNET</span>
-                    </div>
-                    <p className="text-slate-400 max-w-sm leading-relaxed">
-                        The digital backbone for Indian schools and colleges. Built to move institutional management beyond paper and WhatsApp.
-                    </p>
-                </div>
-                <div className="space-y-6">
-                    <h4 className="font-bold text-slate-200">Resources</h4>
-                    <ul className="space-y-3 text-slate-500 text-sm">
-                        <li><a href="#" className="hover:text-teal-400 transition-colors">Documentation</a></li>
-                        <li><a href="#" className="hover:text-teal-400 transition-colors">Customer Stories</a></li>
-                        <li><a href="#" className="hover:text-teal-400 transition-colors">Pricing Models</a></li>
-                    </ul>
-                </div>
-                <div className="space-y-6">
-                    <h4 className="font-bold text-slate-200">Support</h4>
-                    <ul className="space-y-4 text-slate-500 text-sm">
-                        <li className="flex items-center gap-2 font-medium"><Mail className="w-4 h-4 text-teal-400" /> hello@kalnet.co</li>
-                        <li className="flex items-center gap-2 font-medium"><Phone className="w-4 h-4 text-teal-400" /> (+91) 9988776655</li>
-                    </ul>
+        {/* --- SECTION 4: TRUST SECTION --- */}
+        <section className="py-20 bg-slate-50 overflow-hidden">
+            <div className="container mx-auto px-6 max-w-6xl text-center space-y-10">
+                <p className="text-sm font-bold uppercase tracking-widest text-slate-400 flex items-center justify-center gap-3">
+                    <div className="h-px w-8 bg-slate-200" />
+                    Trusted by schools across India
+                    <div className="h-px w-8 bg-slate-200" />
+                </p>
+                <div className="flex flex-wrap justify-center items-center gap-10 md:gap-20 opacity-30 grayscale contrast-125">
+                    <div className="flex items-center gap-2"><Globe className="w-8 h-8" /><span className="font-bold text-xl">Global Academy</span></div>
+                    <div className="flex items-center gap-2"><Building2 className="w-8 h-8" /><span className="font-bold text-xl">Mount Saint Institution</span></div>
+                    <div className="flex items-center gap-2"><CheckCircle2 className="w-8 h-8" /><span className="font-bold text-xl">Standard High</span></div>
+                    <div className="flex items-center gap-2"><Zap className="w-8 h-8" /><span className="font-bold text-xl">Spark College</span></div>
                 </div>
             </div>
-            <div className="container mx-auto px-6 max-w-7xl mt-20 pt-8 border-t border-white/5 text-slate-600 text-xs flex justify-between">
-                <p>© 2026 KALNET Technologies. Built for Bharath.</p>
-                <div className="flex gap-6">
-                    <a href="#">Privacy Policy</a>
-                    <a href="#">Terms</a>
-                </div>
+        </section>
+
+        {/* --- SECTION 5: FINAL CTA --- */}
+        <section className="py-24 md:py-40 bg-white text-center">
+            <div className="container mx-auto px-6 max-w-4xl space-y-10">
+                <h2 className="text-4xl md:text-6xl font-extrabold text-slate-900 tracking-tight leading-tight">
+                    Ready to simplify your school management?
+                </h2>
+                <Button 
+                    size="lg"
+                    onClick={scrollToCalendly}
+                    className="bg-teal-600 text-white rounded-full px-12 py-8 text-xl font-bold hover:shadow-xl hover:shadow-teal-600/30 transition-all active:scale-95 group"
+                >
+                    Start Your Journey <ArrowRight className="ml-2 w-6 h-6 group-hover:translate-x-2 transition-transform" />
+                </Button>
             </div>
-        </footer>
+        </section>
       </div>
     </>
   );
