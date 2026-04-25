@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import Link from "next/link";
 import { Logo } from "./Logo";
 
 export const Footer = () => (
@@ -15,15 +15,15 @@ export const Footer = () => (
         <div>
           <h4 className="mb-3 text-sm font-semibold text-foreground">Product</h4>
           <ul className="space-y-2 text-sm text-muted-foreground">
-            <li><Link to="/product" className="hover:text-foreground">Modules</Link></li>
-            <li><Link to="/pricing" className="hover:text-foreground">Pricing</Link></li>
-            <li><Link to="/demo" className="hover:text-foreground">Book a Demo</Link></li>
+            <li><Link href="/product" className="hover:text-foreground">Modules</Link></li>
+            <li><Link href="/pricing" className="hover:text-foreground">Pricing</Link></li>
+            <li><Link href="/demo" className="hover:text-foreground">Book a Demo</Link></li>
           </ul>
         </div>
         <div>
           <h4 className="mb-3 text-sm font-semibold text-foreground">Company</h4>
           <ul className="space-y-2 text-sm text-muted-foreground">
-            <li><Link to="/about" className="hover:text-foreground">About</Link></li>
+            <li><Link href="/about" className="hover:text-foreground">About</Link></li>
             <li><a href="mailto:hello@kalnet.co" className="hover:text-foreground">hello@kalnet.co</a></li>
             <li>Hyderabad, India</li>
           </ul>

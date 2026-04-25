@@ -1,18 +1,21 @@
+"use client";
+
 import { useState } from "react";
-import { Link, NavLink, useLocation } from "react-router-dom";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
 import { Logo } from "./Logo";
 import { Button } from "@/components/ui/button";
 
 const links = [
-  { to: "/product", label: "Product" },
-  { to: "/pricing", label: "Pricing" },
-  { to: "/about", label: "About" },
+  { href: "/product", label: "Product" },
+  { href: "/pricing", label: "Pricing" },
+  { href: "/about", label: "About" },
 ];
 
 export const Navbar = () => {
   const [open, setOpen] = useState(false);
-  const loc = useLocation();
+  const pathname = usePathname();
 
   return (
     <header className="sticky top-0 z-50 border-b border-border/60 bg-background/80 backdrop-blur-md">
@@ -20,22 +23,20 @@ export const Navbar = () => {
         <Logo />
         <div className="hidden items-center gap-1 md:flex">
           {links.map((l) => (
-            <NavLink
-              key={l.to}
-              to={l.to}
-              className={({ isActive }) =>
-                `rounded-md px-3 py-2 text-sm font-medium transition-colors ${
-                  isActive ? "text-foreground" : "text-muted-foreground hover:text-foreground"
-                }`
-              }
+            <Link
+              key={l.href}
+              href={l.href}
+              className={`rounded-md px-3 py-2 text-sm font-medium transition-colors ${
+                pathname === l.href ? "text-foreground" : "text-muted-foreground hover:text-foreground"
+              }`}
             >
               {l.label}
-            </NavLink>
+            </Link>
           ))}
         </div>
         <div className="hidden md:block">
           <Button asChild size="sm" className="bg-gradient-cta text-primary-foreground shadow-elegant hover:opacity-90">
-            <Link to="/demo">Book a Demo</Link>
+            <Link href="/demo">Book a Demo</Link>
           </Button>
         </div>
         <button
@@ -51,18 +52,18 @@ export const Navbar = () => {
           <div className="container flex flex-col gap-1 py-3">
             {links.map((l) => (
               <Link
-                key={l.to}
-                to={l.to}
+                key={l.href}
+                href={l.href}
                 onClick={() => setOpen(false)}
                 className={`rounded-md px-3 py-3 text-sm font-medium ${
-                  loc.pathname === l.to ? "bg-muted text-foreground" : "text-muted-foreground"
+                  pathname === l.href ? "bg-muted text-foreground" : "text-muted-foreground"
                 }`}
               >
                 {l.label}
               </Link>
             ))}
             <Button asChild className="mt-2 bg-gradient-cta text-primary-foreground" onClick={() => setOpen(false)}>
-              <Link to="/demo">Book a Demo</Link>
+              <Link href="/demo">Book a Demo</Link>
             </Button>
           </div>
         </div>
